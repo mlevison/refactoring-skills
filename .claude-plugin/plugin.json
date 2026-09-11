@@ -1,0 +1,14 @@
+{
+  "name": "refactoring-skills",
+  "displayName": "Refactoring Skills",
+  "version": "0.1.0",
+  "description": "Code smell detection that treats a smell as a hint rather than a verdict. Reports what it found, how sure it is, why it might be fine, and the refactoring that would address it.",
+  "author": {
+    "name": "Mark Levison",
+    "url": "https://agilepainrelief.com"
+  },
+  "homepage": "https://github.com/mlevison/refactoring-skills",
+  "repository": "https://github.com/mlevison/refactoring-skills",
+  "license": "CC-BY-SA-4.0",
+  "keywords": ["code-smells", "refactoring", "technical-debt", "code-review", "legacy-code"]
+}
