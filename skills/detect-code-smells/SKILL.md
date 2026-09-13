@@ -15,7 +15,7 @@ A code smell is a hint that something might be wrong, not a finding that somethi
    Use the files or directory the user named. Given no target, examine the current uncommitted diff, and say that is what was examined. If both are absent, ask rather than taking the whole repository as the target - reporting every hint in a whole repository produces a volume nobody reads.
 
 2. **Establish the language.**
-   Load `references/languages/<language>/` alongside the neutral files when a layer for that language exists. Only TypeScript exists so far. For any other language, run on the neutral files alone and state plainly in the report that no language-specific guidance exists yet, so the thresholds are general rather than tuned.
+   Load `references/languages/<language>/` alongside the neutral files when a layer for that language exists, starting with that layer's `README.md` - it says what the layer holds and what the layer's toolchain can be expected to catch. Only TypeScript exists so far. For any other language, run on the neutral files alone and state plainly in the report that no language-specific guidance exists yet, so the thresholds are general rather than tuned.
 
 3. **Read the catalogue before reading the code.**
    Two sets, and both are in scope on every run:
@@ -34,7 +34,9 @@ A code smell is a hint that something might be wrong, not a finding that somethi
 5. **Sweep the whole target before reading any of it.**
    `grep`, `shasum` and `wc` are on every machine, need no install, and cover a target no reader could finish. Use them for the smells where a count or an absence is the finding: occurrences of an idiom, assertions, suppressions, `export *`, `../../`, enum declarations. Hash comparable blocks against each other to find duplication across more files than can be read.
 
-   This is the only level that supports a **negative** result. A zero from a sweep is a real zero; silence from reading is not. Test every pattern against an answer already known before reporting its output - a wrong pattern returns a confident number rather than an error.
+   Questions about code *shape* rather than text go to `ast-grep` where it is installed. `references/sweeping.md` says which question goes to which tool, what `ast-grep` cannot do, and which file types it does not cover.
+
+   This is the only level that supports a **negative** result. A zero from a sweep is a real zero; silence from reading is not. Test every pattern against an answer already known before reporting its output - a wrong pattern returns a confident number rather than an error, in either tool.
 
 6. **Read the files the sweep points at.**
    Read whole files, not fragments. A smell is a property of code in context, and a fragment has no context. Judgment smells - Long Method, Side Effect, Feature Envy, and every "when it's fine" call - exist only at this level.

@@ -83,11 +83,13 @@ And it has no memory between runs. A finding you looked at and decided was fine 
 ## What's in Here
 - `SKILL.md` - the workflow Claude follows
 - `references/smells/` - one file per neutral smell: what it is, what it costs, the mechanical and judgment signals, when it's fine, and how to pick a confidence tier
+- `references/languages/typescript/README.md` - what the TypeScript layer holds, and which tools to recommend in which order
 - `references/languages/typescript/<smell>.md` - the same nine smells with actual numbers, TypeScript-specific forms, and the idioms that only look like smells
 - `references/languages/typescript/smells/` - the eight TypeScript-owned smells, self-contained because there is no neutral parent to translate
 - `references/refactorings.md` - Fowler 2nd edition names, with 1st edition aliases
 - `references/languages/typescript/remedies.md` - fixes for the TypeScript-native smells
 - `references/languages/typescript/lint-coverage.md` - which rule owns which smell, what each rule cannot decide, and the config worth recommending when nothing is set up. The skill reads your config; it never runs a linter.
+- `references/sweeping.md` - which sweep tool answers which kind of question, and what `ast-grep` cannot do
 - `references/report-format.md` - the shape of the report and the terminal summary
 
 The split between `smells/` and `languages/` is deliberate, and it holds in both directions. Thresholds are language-dependent while the ideas are not, so a neutral smell has a thin language layer. A smell that exists *because* of a language has no neutral form at all, so it lives entirely under that language. Adding Python means adding `references/languages/python/`, not forking the catalogue.

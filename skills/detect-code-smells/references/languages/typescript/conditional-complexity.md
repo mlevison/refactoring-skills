@@ -3,7 +3,7 @@
 ## Thresholds
 - **Nesting past 3 levels** of `if` / `for` / `try`.
 - **3 or more clauses** in one condition, or any negation applied to a compound expression.
-- **Cyclomatic complexity past ~10** where a tool reports it. ESLint's `complexity` rule and `eslint-plugin-sonarjs`' cognitive-complexity rule both measure this; neither is required by this skill.
+- **Cognitive complexity past ~15** where a tool reports it. `sonarjs/cognitive-complexity` is the one to prefer, for the reason in `lint-coverage.md`: it discounts the flat `switch` this file calls the target shape, and cyclomatic complexity punishes it. Neither is required by this skill.
 - **An `else if` chain past 4 arms** that is not a `switch`.
 
 ## How it shows up

@@ -82,7 +82,7 @@ Five smells from the glossary need rethinking before they earn a place, because 
 Each needs its TypeScript analogue worked out before it can be detected. They stay language-neutral in the catalogue; it is the language layer that has to do the work.
 
 ## More languages
-The `references/languages/<language>/` split exists so this is additive: write eight files, change nothing else. Python is the obvious next one, being what the source catalogue's own examples use.
+The `references/languages/<language>/` split exists so this is additive: write a new layer, change nothing else. `references/languages/typescript/README.md` is the shape to copy - the layer's manifest plus the tools worth recommending for that language and the order to adopt them in. Python is the obvious next one, being what the source catalogue's own examples use.
 
 Worth doing once, deliberately, after the TypeScript layer has been corrected by real use - so the second language inherits a shape that works rather than the first guess.
 
