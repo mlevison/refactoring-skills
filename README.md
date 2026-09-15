@@ -51,13 +51,15 @@ npx skills update                                                   # pull later
 
 ### Claude Code plugin
 ```
-/plugin marketplace add mlevison/refactoring-skills
-/plugin install refactoring-skills@agile-pain-relief-code
+/plugin marketplace add mlevison/agile-pain-relief-skills
+/plugin install refactoring-skills@agile-pain-relief-skills
 ```
 
-The first line registers the catalogue and installs nothing. The second does the installing. The marketplace is named `agile-pain-relief-code` to avoid colliding with `agile-pain-relief`, which [Agent Thinking Skills](https://github.com/mlevison/agent-thinking-skills) already uses.
+The first line registers the catalogue and installs nothing. The second does the installing. [agile-pain-relief-skills](https://github.com/mlevison/agile-pain-relief-skills) is one marketplace for all of Agile Pain Relief's skills, so the same catalogue also offers [Agent Thinking Skills](https://github.com/mlevison/agent-thinking-skills) — add it once, install whichever plugins you want.
 
-To remove: `/plugin uninstall refactoring-skills@agile-pain-relief-code`.
+To remove: `/plugin uninstall refactoring-skills@agile-pain-relief-skills`.
+
+This repository used to be its own marketplace. If you installed that way, `/plugin uninstall refactoring-skills@agile-pain-relief-code` and `/plugin marketplace remove agile-pain-relief-code` first.
 
 ### By hand
 Each skill is a self-contained directory under `skills/`. Copy the whole thing, `references/` and all, or the skill won't load:
@@ -74,8 +76,8 @@ Anthropic's guide: https://support.claude.com/en/articles/12512180-using-skills-
 ## Repository Layout
 ```
 .claude-plugin/
-  marketplace.json  # the catalogue /plugin marketplace add reads
-  plugin.json       # this repo as a single plugin
+  plugin.json       # this repo as a single plugin; the catalogue that
+                    # lists it is github.com/mlevison/agile-pain-relief-skills
 docs/
   product-backlog.md
 skills/
