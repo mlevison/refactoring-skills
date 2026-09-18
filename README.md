@@ -5,9 +5,15 @@ Agent/Claude Skills for finding code smells and, in time, for refactoring them a
 >
 > — [Agile Pain Relief glossary: Code Smells](https://agilepainrelief.com/glossary/code-smells/)
 
-That distinction is the whole design. A tool that reports smells as defects gets switched off within a week, because most of what it finds is code somebody had a reason for. So every finding here arrives with the strongest case *against* itself, and the decision stays with the person reading it.
+These skills are designed to help you investigate smells and decide for yourself if they need refactoring.
 
-More important than ever in the era of AI-assisted coding, where the volume of plausible-looking code has gone up and the number of people who have read it has not.
+The problem with using GenAI to detect something is expense and reliability. Each run of a GenAI tool costs tokens/money and energy. In addition since GenAI is just a game of rolling dice to pick the next most likely word, it doesn't always do the right job.
+
+Many of the common smells can be detected in their specific programming language using static analysis tools like lint, eslint, etc. The skills look at your tooling and make suggestions as to which smells can be handled by lower cost tools.
+
+When the skill detects a smell, it also gives you reasons against doing the refactoring.
+
+Finally if you're new to code smells, the tool is also designed to help you learn and develop your own sense of taste. This means you can look at GenAI generated code and know whether or not you're looking at quality.
 
 ## The Skills
 | Skill | What it's for |
@@ -25,9 +31,9 @@ Point it at code, or at nothing:
 ## Languages
 Language-neutral by design, TypeScript first because that is what needed refactoring.
 
-The catalogue is split in two: `references/smells/` holds the ideas, which do not change between languages, and `references/languages/<language>/` holds the thresholds and the local forms, which do. A 30-line function means something different in TypeScript than in Python, and the number belongs where that is true.
+The catalogue is split in two: `references/smells/` holds the ideas, which do not change between languages, and `references/languages/<language>/` holds the thresholds and the local forms, which do.
 
-Some smells have no neutral form at all. A floating promise, an `any` leaking inward, a cycle through a barrel file - these exist because TypeScript exists, so they live entirely under `references/languages/typescript/smells/` with nothing to translate. Fowler's catalogue has no refactoring for them either, so they name a remedy from the language's own list.
+Some smells are unique to the programming language. The use of `any` is unique (thankfully) to TypeScript. Hint: `any` defeats the purpose of a strongly typed programming language. It and other TypeScript smells live under `references/languages/typescript/smells/`.
 
 Run against a language with no layer yet, the skill uses the neutral files and says so, rather than pretending its thresholds were tuned for your code.
 
@@ -59,8 +65,6 @@ The first line registers the catalogue and installs nothing. The second does the
 
 To remove: `/plugin uninstall refactoring-skills@agile-pain-relief-skills`.
 
-This repository used to be its own marketplace. If you installed that way, `/plugin uninstall refactoring-skills@agile-pain-relief-code` and `/plugin marketplace remove agile-pain-relief-code` first.
-
 ### By hand
 Each skill is a self-contained directory under `skills/`. Copy the whole thing, `references/` and all, or the skill won't load:
 
@@ -75,6 +79,9 @@ Anthropic's guide: https://support.claude.com/en/articles/12512180-using-skills-
 
 ## Repository Layout
 ```
+README.md         # this file
+ATTRIBUTION.md    # credit and licensing for the sources this catalogue builds on
+LICENSE
 .claude-plugin/
   plugin.json       # this repo as a single plugin; the catalogue that
                     # lists it is github.com/mlevison/agile-pain-relief-skills
@@ -93,7 +100,7 @@ skills/
 [Agent Thinking Skills](https://github.com/mlevison/agent-thinking-skills) - Systems Thinking, Critical Thinking, and Critical Thinking for GenAI. Same house, different problem: those skills question your reasoning, these ones read your code.
 
 ## GenAI Usage
-Claude is used to help design the skills and write the installation instructions. The core content remains human authored.
+Unlike my other skills that are human first, this set is GenAI first. I hand edit the README.md files. The skill files are written by GenAI and checked by me. Before use I read the skills and then prove them against my own codebase and selected open source projects
 
 ## Contributing
 Issues first, please, for ideas every bit as much as for bugs. It's the cheapest place to find out whether something fits.

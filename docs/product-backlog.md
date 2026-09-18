@@ -1,74 +1,58 @@
 # Product Backlog
-Ordered most valuable first. Each item records the reasoning, because the reasoning is the part that gets lost.
+Ordered most valuable first. Each item keeps the reasoning behind it, since that's the part that gets lost.
 
-Not estimates, not story points. This is a list of decisions already argued through, kept so they don't have to be argued again.
+Not estimates, not story points - decisions already argued through, kept so they don't have to be argued again.
 
 ---
 
 ## A known-answer fixture
-Two runs against the YFL expense tracker have corrected real defects, but neither could say what the skill **missed**. A run that reports ten findings and a run that missed forty look identical from outside.
+Two runs so far have corrected real defects, but neither could say what the skill **missed** - a run with ten findings and a run that missed forty look identical from outside.
 
-What this needs: a deliberately smelly TypeScript file in the repo, plus a companion file recording exactly which smells are planted where. Then false negatives are measurable, and it becomes a regression test every time a reference file changes - which matters now that reference files are being edited in response to live runs.
-
-### What the runs so far have taught us
-Kept because the reasoning is the valuable part, and because it is evidence about the next change too.
-
-- **Two findings named a refactoring that does not address their smell** (`Primitive Obsession → Extract Function`). Cause: the workflow pointed at the whole 32-name catalogue rather than the shortlist on the smell's own file. Fixed, and it is the reason each smell file's shortlist now has to match `refactorings.md` exactly.
-- **Zero Side Effect findings across 94 service files.** Not credible. The **When it's fine** section had escape hatches - "it's a command", "the codebase is mutable" - wide enough to excuse an entire service layer. Tightened, and `*Service.ts` is now explicitly not a counter-case.
-- **The report claimed 94 files examined with nothing to back it.** No instruction existed to report coverage honestly. Now it reports files *read* against files in target.
-- **It found duplication the catalogue had no entry for, and said so rather than mislabelling it.** That behaviour is now specified in the report format, and Duplicated Code was promoted into the catalogue on the strength of it.
-- **Wrong target for a first test.** `utils/` and `services/` were many small files, which size-based smells will not trip. Picking a target is part of the test.
-- **A missing catalogue entry produces a wrong label, not silence.** Two findings reported as Primitive Obsession in run 1 came back as Duplicated Code in run 3, at identical file and line, once the Duplicated Code entry existed. Primitive Obsession went from three findings to zero. This is the argument for the "Not in the catalogue" report section, now evidenced rather than asserted.
-- **The terminal summary dropped findings silently.** A header reading `Clear (12)` above ten rows, and `Worth a look (8) - 0 shown`. The cap was "up to ten, Clear first", which ate two Clear findings with no note - the exact failure the format was written to prevent. Now every Clear finding is listed however many there are, only Worth a look is capped, and a cut tier must say `N shown of M`.
-- **Sweeping beats reading for anything countable, and it needs no tooling.** On 651 files of Immich's `web/`, `grep` and `shasum` produced every negative result in the report and its strongest positive finding. Reading 5 files produced the judgment findings and nothing else. Sweep-then-read is now steps 5 and 6 of the workflow.
-- **One coverage number for a whole report is misleading.** "4 of 710 files read · 10 findings" let a reader think the other 706 were clean. Coverage is now stated per level - swept, compared, read - with each finding marked, and a judgment smell's absence from unread files called unknown rather than established.
-- **The report destination assumed the examined repository was the user's.** Immich's clone is clean and does not gitignore `tmp/`, so following the spec would have left an untracked directory in a third-party checkout. The rule now checks for an existing or gitignored `tmp/` and otherwise **asks** - with an explicit ban on falling back to a system temp directory, where the file would be unfindable and eventually deleted.
-- **Strong gates make a short report, and that needs saying out loud.** Immich runs `eslint --max-warnings 0`, `svelte-check --fail-on-warnings` and `tsc --noEmit` in one gating script. Two whole smells reported zero instances because lint owns them. A report that is short for that reason reads identically to a report that is short because nothing was checked, unless it says which.
-- **Lint is the better answer wherever a rule is exact.** Raised as an objection and it holds: hand-detecting what `no-floating-promises` decides deterministically is slower, non-deterministic, and does not block a build. Five of the eight TypeScript-native smells were re-scoped to check the *gate* instead of the instances. The dividing line that came out of it is worth keeping: lint wins where the rule is mechanical and exact, reading wins where "when it's fine" decides the answer.
+Needs a deliberately smelly TypeScript file plus a companion file naming which smells are planted where. That makes false negatives measurable and gives a regression test for every reference-file edit - which matters now that reference files change in response to live runs.
 
 ## Structural clone detection
-Duplicated Code is now in the catalogue, found by reading. That catches identical and near-identical blocks, which turned out to be most of what a real codebase has.
+Duplicated Code is in the catalogue, found by reading - which catches identical and near-identical blocks, most of what a real codebase has.
 
-What reading cannot do: the same algorithm written two different ways, and any comparison at a scale beyond a few files. A detector that hashes and compares does both. Until one is attached, the absence of a duplication finding means nothing was obvious - the smell file and the report both say so, and that honesty is the interim answer.
+Reading can't catch the same algorithm written two different ways, or any comparison beyond a few files. A hash-and-compare detector does both. Until one is attached, no duplication finding means nothing was obvious, not that nothing exists - the smell file and report both say so.
 
 ## Tool-assisted detection, for the tools that need installing
-**Reframed by the Immich run.** The original item assumed tool-assisted detection meant adding dependencies - `jscpd`, `ts-morph`, complexity plugins - and was deferred because every one of those is a per-language install that does nothing for the next language.
+**Reframed by the Immich run.** Assumed tool-assisted detection meant adding dependencies (`jscpd`, `ts-morph`, complexity plugins) and was deferred as a per-language install that helps no other language.
 
-That premise was half wrong. `grep`, `shasum` and `wc` are on every machine, are language-neutral, and turned out to deliver most of the value: 651 files swept in seconds, five full-coverage negative results, and the single strongest finding of the run (a byte-identical 56-line block across two route files, found by hashing, which no amount of reading would have established). Sweeping is now step 5 of the workflow rather than a backlog item.
+Half wrong: `grep`, `shasum` and `wc` are on every machine, language-neutral, and delivered most of the value - 651 files swept in seconds, five full-coverage negative results, and the run's strongest finding (a byte-identical 56-line block across two route files, found by hashing alone). Sweeping is now step 5 of the workflow, not a backlog item.
 
-What is left in this item is genuinely the part that needs installing: cyclomatic and cognitive complexity, type-aware AST queries, and import-cycle detection. Import cycles are the clearest gap - the Immich run could not check them at all, and had to say so.
+What's still left to install: cyclomatic and cognitive complexity, type-aware AST queries, and import-cycle detection - the clearest gap, since the Immich run couldn't check it at all.
 
-No specific tools are recommended yet; surveying what exists and what is still maintained is part of this item.
+No tools recommended yet; surveying what's maintained is part of this item.
 
 ## Trust the patterns, not just the counts
-Two `grep` patterns in the Immich run were wrong and returned confident nonsense rather than errors - one reported 1617 matches where the pattern had collapsed into "any `!` character", its replacement reported 0 against ground truth that was non-zero. The figure finally reported came from a third method, cross-checked by hand against two known instances.
+Two `grep` patterns in the Immich run returned confident nonsense instead of errors: one matched 1617 times after collapsing into "any `!` character"; its fix matched 0 against known-nonzero ground truth. The number finally reported came from a third method, hand-checked against two known instances.
 
-A wrong pattern does not fail. That makes sweeping more dangerous than reading in one specific way: it produces numbers that look authoritative. `report-format.md` now requires testing a pattern against a known answer before reporting its output, but a known-answer fixture would make that mechanical instead of a matter of discipline - which is another reason the fixture item sits at the top.
+A wrong pattern doesn't fail - it produces numbers that look authoritative, which makes sweeping more dangerous than reading. `report-format.md` now requires testing a pattern against a known answer first. A known-answer fixture would make that mechanical instead of a matter of discipline - another reason that item sits at the top.
 
 ## React and hooks smells
-The fourth category of TypeScript-native smells, deliberately left out of the first batch: lying `useEffect` dependency arrays, state derived into `useState` that should be computed, prop drilling, effects that belong in event handlers.
+The fourth TypeScript-native category, deliberately left out of the first batch: lying `useEffect` dependency arrays, state that should be computed rather than held in `useState`, prop drilling, effects that belong in event handlers.
 
-Held back because it is only worth the files if the codebases under test are React-heavy, and because the three categories shipped - type-system escapes, async hazards, module structure - apply to every TypeScript project regardless of framework. Svelte equivalents would be a separate set again, and the YFL runs suggest that is the more likely need.
+Held back because it only pays off on React-heavy codebases, while the three shipped categories - type-system escapes, async hazards, module structure - apply to every TypeScript project regardless of framework. Svelte equivalents would need a separate set again, and real-world runs so far suggest that's the more likely need.
 
 ## Acknowledged findings
-There is no memory between runs. The intended loop is fix five, re-run - and everything not fixed comes back, including the findings already considered and deliberately kept.
+No memory between runs. The loop is fix five, re-run - so everything not fixed comes back, including findings already considered and deliberately kept.
 
-That friction grows with every decision made. An ignore file is the obvious answer, and it needs a finding identity that survives the code moving, which is the hard part. In-source suppression comments are ruled out: they put a stale comment in the code and make a read-only skill write to it.
+That friction compounds with every decision made. An ignore file is the obvious fix, but needs a finding identity that survives the code moving - the hard part. In-source suppression comments are ruled out: they leave a stale comment behind and make a read-only skill write to code.
 
 ## Rank by blast radius
-v1 orders by confidence tier, then file and line. Cheap and stable, but it doesn't distinguish a 200-line function at the heart of the domain from a 200-line seed script.
+v1 orders by confidence tier, then file and line - cheap and stable, but it can't tell a 200-line function at the heart of the domain from a 200-line seed script.
 
-Ranking by how much depends on the smelly code would put the highest-value work at the top - which matters, because the loop is to fix the top few and re-run. It needs a second analysis pass to find callers, which is the expensive part and the part most likely to be wrong.
+Ranking by how much depends on the smelly code would put the highest-value work first, which matters since the loop is fix-top-few-and-re-run. Needs a second pass to find callers - the expensive part, and the part most likely to be wrong.
 
 ## Smells that need change history
-**Divergent Change** and **Shotgun Surgery** are invisible to a static read. Both are statements about how code changes over time: many unrelated methods in one class changing together, or one change rippling across many files.
+**Divergent Change** and **Shotgun Surgery** are invisible to a static read - both describe how code changes over time: many unrelated methods in one class changing together, or one change rippling across many files.
 
-They need git history, not source. That is a different mechanism - probably a different skill - and it is genuinely detectable, unlike guesswork.
+They need git history, not source - a different mechanism, probably a different skill, and genuinely detectable rather than guesswork.
 
 ## Smells that need whole-program analysis
-**Dead Code** and **Speculative Generality** need to know what is reachable. In TypeScript an `export` always looks used from inside its own file, so an LLM reading one file at a time will confidently recommend deleting live code.
+**Dead Code** and **Speculative Generality** need to know what's reachable. An `export` always looks used from inside its own file, so an LLM reading one file at a time will confidently recommend deleting live code.
 
-This one is dangerous rather than merely noisy, which is why it waits for a tool that can actually resolve references.
+Dangerous rather than noisy - waits for a tool that can actually resolve references.
 
 ## Smells whose OO framing doesn't transfer to TypeScript
 Five smells from the glossary need rethinking before they earn a place, because applying them literally to idiomatic TypeScript produces nonsense:
@@ -79,12 +63,12 @@ Five smells from the glossary need rethinking before they earn a place, because 
 - **Fate over Action** - TS rarely uses getter/setter pairs. The analogue is exported mutable objects and missing `readonly`.
 - **Middle Man** - barrel files and adapters are legitimate patterns here.
 
-Each needs its TypeScript analogue worked out before it can be detected. They stay language-neutral in the catalogue; it is the language layer that has to do the work.
+Each needs its TypeScript analogue worked out before it's detectable. They stay in the language-neutral catalogue; the language layer does the work.
 
 ## More languages
-The `references/languages/<language>/` split exists so this is additive: write a new layer, change nothing else. `references/languages/typescript/README.md` is the shape to copy - the layer's manifest plus the tools worth recommending for that language and the order to adopt them in. Python is the obvious next one, being what the source catalogue's own examples use.
+The `references/languages/<language>/` split makes this additive: write a new layer, change nothing else. `references/languages/typescript/README.md` is the shape to copy - manifest plus recommended tools and adoption order. Python is the obvious next one, since the source catalogue's own examples use it.
 
-Worth doing once, deliberately, after the TypeScript layer has been corrected by real use - so the second language inherits a shape that works rather than the first guess.
+Worth doing once, deliberately, after real use has corrected the TypeScript layer - so the second language inherits a shape that works, not a first guess.
 
 ## A refactoring skill
 `/detect-code-smells` names the refactoring and stops. The other half is performing it - safely, in small steps, with tests run between them.
@@ -99,6 +83,6 @@ The tidy version is one catalogue listing both plugins. Not urgent - local insta
 ---
 
 ## Not this repo
-**The glossary links to a stale mirror.** [agilepainrelief.com/glossary/code-smells/](https://agilepainrelief.com/glossary/code-smells/) links each smell to `luzkan.github.io/smells`, which is the older Gatsby build of Marcel Jerzyk's catalogue. It still carries an "all rights reserved" footer.
+**The glossary links to a stale mirror.** [agilepainrelief.com/glossary/code-smells/](https://agilepainrelief.com/glossary/code-smells/) links each smell to `luzkan.github.io/smells`, the older Gatsby build of Marcel Jerzyk's catalogue. It still carries an "all rights reserved" footer.
 
-The current home is [codesmells.org](https://www.codesmells.org) - same author, same 56 entries, and MIT licensed. Worth redirecting when the glossary next gets a pass.
+The current home is [codesmells.org](https://www.codesmells.org) - same author, same 56 entries, MIT licensed. Worth redirecting when the glossary next gets a pass.
